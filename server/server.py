@@ -1,5 +1,16 @@
 import socket
+import time
 import threading
+
+# Colors
+NORMAL = '\033[0m'
+RED = '\033[31m'
+GREEN = '\033[32m'
+ORANGE = '\033[33m'
+BLUE = '\033[34m'
+PURPLE = '\033[35m'
+YELLOW = '\033[93m'
+PINK = '\033[95m'
 
 HEADER = 64
 PORT = 8081
@@ -22,18 +33,28 @@ def handle_client(conn, addr, client_username):
     print(f"[NEW CONNECTION] {addr} connected.")
     connected = True
     while connected:
-        msg_length = conn.recv(HEADER).decode(FORMAT)
-        if msg_length:
-            msg_length = int(msg_length)
-            msg = conn.recv(msg_length).decode(FORMAT)
+        action = str(conn.recv(256).decode(FORMAT))
+        print("Action:" + action)
+        if action == "SEND":
+            print("SEND")
+            msg = str(conn.recv(2048).decode(FORMAT))
             if msg == DISCONNECT_MESSAGE:
-                connected = False
-            target = conn.recv(1024).decode(FORMAT)
-            MESSAGES[target] = msg
-            message_receive = MESSAGES[client_username].encode(FORMAT)
-            conn.send(message_receive)
-            print(f"[{addr}] {msg} {target}")
-        conn.send("[Server has received the message]".encode(FORMAT))
+                break
+            target = str(conn.recv(1024).decode(FORMAT))
+            MESSAGES[target].append([msg, client_username]) # Send message
+            print(MESSAGES)
+
+        if action == "RECEIVE":
+            messages = MESSAGES[client_username]
+            NumberOfMessage = len(messages)
+            conn.send(str(NumberOfMessage).encode(FORMAT)) # Send the number of messages
+            time.sleep(0.25)
+            if NumberOfMessage != 0:
+                for i in range(NumberOfMessage):
+                    conn.send(messages[i][0].encode(FORMAT))
+                    time.sleep(0.15)
+                    conn.send(messages[i][1].encode(FORMAT))
+                    time.sleep(0.15)
 
     conn.close()
 
@@ -43,7 +64,7 @@ def start():
     while True:
         conn, addr = server.accept()
         username = str(conn.recv(1024).decode(FORMAT))
-        MESSAGES.update({username:""})
+        MESSAGES.update({username:[]})
         thread = threading.Thread(target=handle_client, args=(conn, addr, username), name=username)
         thread.start()
         print(f"[ACTIVE CONNECTIONS] {threading.activeCount() - 1}")
