@@ -20,7 +20,7 @@ SERVER = "127.0.0.1"
 #print(SERVER)
 #print(socket.gethostname())
 ADDR = (SERVER, PORT)
-FORMAT = 'ascii'
+FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!DISCONNECT"
 
 # This dictionary stores every message the user receives
@@ -55,6 +55,7 @@ def handle_client(conn, addr, client_username):
                     time.sleep(0.15)
                     conn.send(messages[i][1].encode(FORMAT))
                     time.sleep(0.15)
+            MESSAGES[client_username].clear()
 
     conn.close()
 

@@ -14,7 +14,7 @@ PINK = '\033[95m'
 
 HEADER = 64
 PORT = 8081
-FORMAT = 'ascii'
+FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "!DISCONNECT"
 # Whatever IP address you found from running ifconfig in terminal.
 # SERVER = ""
@@ -61,14 +61,14 @@ def receive_msg(action="RECEIVE"):
         for i in range(NumberOfMessage):
             message = str(client.recv(2048).decode(FORMAT))
             message_from = str(client.recv(2048).decode(FORMAT))
-            print(message_from + " >> " + message)
+            print(message_from + " 👉🏻 " + message)
 
 try:
     while True:
         message = str(input(NORMAL + "Message: "))
         target = str(input(NORMAL + "Target: "))
         send_msg(message=message, target=target)
-        time.sleep(0.5)
+        time.sleep(0.25)
         receive_msg()
 except:
     send_msg(message=DISCONNECT_MESSAGE, target="!SERVER")
