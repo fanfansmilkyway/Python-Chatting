@@ -68,7 +68,7 @@ def start():
         MESSAGES.update({username:[]})
         thread = threading.Thread(target=handle_client, args=(conn, addr, username), name=username)
         thread.start()
-        print(f"[ACTIVE CONNECTIONS] {threading.activeCount() - 1}")
+        print(f"[ACTIVE CONNECTIONS] {threading.active_count() - 1}")
 
 print("[STARTING] server is starting...")
 start()

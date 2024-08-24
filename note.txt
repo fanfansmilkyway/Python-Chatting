@@ -1,0 +1,2 @@
+You'd better set up a virtual environment by venv.
+Remember to save this respository as private on Github.
